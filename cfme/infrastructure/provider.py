@@ -120,6 +120,8 @@ class Provider(Updateable):
         self.key = key
         self.zone = zone
         self.candu = None
+        self.data = conf.cfme_data['management_systems'][self.key]
+        self.mgmt = provider_factory(self.key)
 
     class Credential(cfme.Credential, Updateable):
         """Provider credentials
@@ -275,8 +277,12 @@ class Provider(Updateable):
 
     def _on_detail_page(self):
         """ Returns ``True`` if on the providers detail page, ``False`` if not."""
-        return sel.is_displayed('//div[@class="dhtmlxInfoBarLabel-2"][contains(., "%s")]'
-                                % self.name)
+
+        try:
+            sel.is_displayed('//div[@class="dhtmlxInfoBarLabel-2"][contains(., "%s (Summary)")]'
+                 % self.name)
+        except AttributeError:
+            return False
 
     @property
     def num_template(self):
