@@ -254,7 +254,7 @@ class Appliance(object):
     def destroy(self):
         """Destroys the VM this appliance is running as
         """
-        if isinstance(self._provider, RHEVMSystem):
+        if isinstance(self.provider, RHEVMSystem):
             # if rhev, try to remove direct_lun just in case it is detach
             self.remove_rhev_direct_lun_disk()
         self.provider.delete_vm(self.vm_name)

@@ -5,6 +5,7 @@ import random
 import re
 import time
 from cfme.configure import tasks
+from cfme.exceptions import CFMEException
 from cfme.infrastructure.virtual_machines import Vm
 from cfme.web_ui import flash, toolbar
 from utils import conf, testgen, version
@@ -107,12 +108,18 @@ def get_appliance(provider_crud):
             # provision appliance and configure
             ver_to_prov = str(version.current_version())
             logger.info("provisioning {} appliance on {}...".format(ver_to_prov, provider_crud.key))
-            appliance = provision_appliance(
-                vm_name_prefix=appliance_vm_prefix,
-                version=ver_to_prov,
-                provider_name=provider_crud.key)
-            logger.info("appliance IP address: " + str(appliance.address))
-            appliance.configure(setup_fleece=True)
+            appliance = None
+            try:
+                appliance = provision_appliance(
+                    vm_name_prefix=appliance_vm_prefix,
+                    version=ver_to_prov,
+                    provider_name=provider_crud.key)
+                logger.info("appliance IP address: " + str(appliance.address))
+                appliance.configure(setup_fleece=True)
+            except Exception:
+                logger.error('Appliance encountered error during initial setup, deleting...')
+                appliance.destroy()
+                raise CFMEException('Appliance encountered error during initial setup')
             appliance_list[provider_crud.key] = appliance
     return appliance_list[provider_crud.key]
 
