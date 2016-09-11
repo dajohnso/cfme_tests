@@ -50,6 +50,16 @@ class BaseProvider(Taggable, Updateable, SummaryMixin):
     add_provider_button = None
     save_button = None
 
+    supports = {
+        'EVENTS': True,
+        'CANDU': True,
+        'PROVISION_PXE': True,
+        'PROVISION_ISO': True,
+        'PROVISION_TEMPLATE': True,
+        'VM_CLONE': True,
+        'VM_MIGRATE': True
+    }
+
     @classmethod
     def add_base_type(cls, nclass):
         cls.type_mapping[nclass.type_tclass] = nclass

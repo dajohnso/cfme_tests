@@ -8,6 +8,16 @@ class GCEProvider(Provider):
     type_name = "gce"
     mgmt_class = GoogleCloudSystem
 
+    supports = {
+        'EVENTS': False,
+        'CANDU': True,
+        'PROVISION_PXE': False,
+        'PROVISION_ISO': False,
+        'PROVISION_TEMPLATE': False,
+        'VM_CLONE': False,
+        'VM_MIGRATE': False,
+    }
+
     def __init__(self, name=None, project=None, zone=None, region=None, credentials=None, key=None):
         super(GCEProvider, self).__init__(name=name, zone=zone, key=key, credentials=credentials)
         self.region = region

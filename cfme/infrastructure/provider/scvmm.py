@@ -8,6 +8,10 @@ class SCVMMProvider(Provider):
     type_name = "scvmm"
     mgmt_class = SCVMMSystem
 
+    supports = {
+        'EVENTS': False,
+    }
+
     def __init__(self, name=None, credentials=None, key=None, zone=None, hostname=None,
                  ip_address=None, start_ip=None, end_ip=None, sec_protocol=None, sec_realm=None,
                  provider_data=None):
