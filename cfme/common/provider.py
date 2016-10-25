@@ -207,25 +207,52 @@ class BaseProvider(Taggable, Updateable, SummaryMixin, Navigatable):
             if self.data.type == 'rhevm' and cred == 'candu':
                 success = False
                 import time
-                for i in range(7):
-                    fill(self.credentials[cred].form, self.credentials[cred],
-                         validate=True)
+                logger.info("Start for parent loop")
+                for i in range(20):
+                    fill(self.credentials[cred].form, self.credentials[cred], validate=True)
+                    logger.info("Filled in creds")
                     for item in flash.get_all_messages():
+                        logger.info("Inside second loop after getting flash messages")
                         if 'Credential validation was successful' in item.message:
-                            success = True
-                            break
+                            logger.info("Got success on cred validation")
+                            if not self.add_provider_button.is_dimmed:
+                                logger.info("Add button not dimmed, clicking add")
+                                self._submit(cancel, self.add_provider_button)
+                                # This is where it screws up, sometimes clicking add does nothing.
+                                if not form_buttons.cancel.can_be_clicked:
+                                    logger.info("no cancel button detected, BREAK!")
+                                    success = True
+                                    break
+                                elif self.add_provider_button.is_dimmed:
+                                    import pdb
+                                    pdb.set_trace()
+                                    # try to fill it in again???
+                                    fill(self.credentials[cred].form, self.credentials[cred],
+                                         validate=False)
+                                    logger.info("Re-filling form")
+                                    self._submit(cancel, self.add_provider_button)
+                                    success = True
+                                    break
+                                else:
+                                    logger.info("cancel button still present, assuming failure")
+                            else:
+                                logger.info("Add button dimmed")
+                                for j in range(20):
+                                    logger.info("    button dimmed? " + str(self.add_provider_button.is_dimmed))
+                                    time.sleep(0.25)
                     if success:
+                        logger.info("success is true, BREAK!")
                         break
-                    time.sleep(1)
+                    else:
+                        logger.info("success is false, sleep for 1")
+                        time.sleep(1)
             else:
                 fill(self.credentials[cred].form, self.credentials[cred],
                      validate=validate_credentials)
-        #import pdb
-        #pdb.set_trace()
-        self._submit(cancel, self.add_provider_button)
+                self._submit(cancel, self.add_provider_button)
         if not cancel:
-            flash.assert_message_match('{} Providers "{}" was saved'.format(self.string_name,
-                                                                            self.name))
+            flash.assert_message_match(
+                '{} Providers "{}" was saved'.format(self.string_name, self.name))
 
     def update(self, updates, cancel=False, validate_credentials=True):
         """
