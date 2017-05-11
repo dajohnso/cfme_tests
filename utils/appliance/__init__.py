@@ -537,6 +537,9 @@ class IPAppliance(object):
         from utils.providers import list_providers
         prov_cruds = list_providers(use_global_filters=False, appliance=self)
 
+        from subprocess import Popen, PIPE
+        p1 = Popen(["netstat -tn"], stdout=PIPE)
+        print p1.communicate()
         found_cruds = set()
         unrecognized_ems_names = set()
         for ems in self._list_ems():
