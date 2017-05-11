@@ -538,7 +538,7 @@ class IPAppliance(object):
         prov_cruds = list_providers(use_global_filters=False, appliance=self)
 
         from subprocess import Popen, PIPE
-        p1 = Popen(["netstat -tn"], stdout=PIPE)
+        p1 = Popen(["/usr/bin/netstat", "-tn"], shell=True, stdout=PIPE)
         logger.info(p1.communicate())
 
         found_cruds = set()
